@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import logo from './logo.svg';
 import './App.css';
 
@@ -7,35 +8,28 @@ function App() {
   const [post, setPost] = useState('');
   const [responseToPost, setResponseToPost] = useState('');
 
-  // This will call a GET request and set 'response' to the property 'express'.
+  // This will call a GET request and set 'response' to the property express.
   useEffect(() => {
-    callApi()
-        .then(res => setResponse(res.express))
+    axios.get('/api/hello')
+        .then(res => {
+          console.log("GET data:", res.data);
+          setResponse(res.data.express);
+        })
         .catch(err => console.log(err));
   }, []);
 
-  const callApi = async () => {
-    const response = await fetch('/api/hello');
-    const body = await response.json();
-    if (response.status !== 200) throw Error(body.message);
-
-    return body;
-  };
-
   const handleSubmit = async e => {
     e.preventDefault();
-    // Post request to Express
-    const response = await fetch('/api/world', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ post }),
-    });
-    // Retrieves response from Express
-    const body = await response.text();
-
-    setResponseToPost(body);
+      axios.post('/api/world', {
+          post: post
+      })
+          .then(function (response) {
+              console.log(response);
+              setResponseToPost(response.data);
+          })
+          .catch(function (error) {
+              console.log(error);
+          });
   };
 
   return (
