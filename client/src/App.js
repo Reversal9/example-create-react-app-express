@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import logo from './logo.svg';
-import { Counter } from './features/counter/Counter';
 import './App.css';
 
 function App() {
@@ -8,11 +7,12 @@ function App() {
   const [post, setPost] = useState('');
   const [responseToPost, setResponseToPost] = useState('');
 
-  function componentDidMount() {
-    this.callApi()
+  // This will call a GET request and set 'response' to the property 'express'.
+  useEffect(() => {
+    callApi()
         .then(res => setResponse(res.express))
         .catch(err => console.log(err));
-  }
+  }, []);
 
   const callApi = async () => {
     const response = await fetch('/api/hello');
@@ -24,13 +24,15 @@ function App() {
 
   const handleSubmit = async e => {
     e.preventDefault();
+    // Post request to Express
     const response = await fetch('/api/world', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ post: post }),
+      body: JSON.stringify({ post }),
     });
+    // Retrieves response from Express
     const body = await response.text();
 
     setResponseToPost(body);
